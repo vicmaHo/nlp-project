@@ -21,10 +21,10 @@ class Nodo:
 # }
 
 gramatica = {
-    'S':   [['NP', 'VP']],
-    'VP':  [['V', 'NP'], ['VP', 'PP']],
-    'PP':  [['P', 'NP']],
-    'V':   [['vi']],
+    'S':   [['NP', 'VP']], # No terminal inicial
+    'VP':  [['V', 'NP'], ['VP', 'PP']], # No terminal
+    'PP':  [['P', 'NP']], #No terminal
+    'V':   [['vi']], # Terminal
     'NP':  [['Det', 'N'], ['Det', 'N', 'PP'], ['yo']],
     'Det': [['al'], ['los']],
     'N':   [['profesor'], ['binoculares']],
