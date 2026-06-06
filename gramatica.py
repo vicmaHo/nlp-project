@@ -59,6 +59,7 @@ gramatica_cfg = {
         ['Vintr'],                          # "lloro"
         ['Vintr', 'SP'],                    # "pienso en la muerte"
         ['Vintr', 'Adv_frec'],              # "lloro constantemente"
+        ['Vintr', 'AP'],                    # "duerme bien"
     ],
 
     # AP (Sintagma Adjetival): predicado o modificador adjetival.
@@ -317,6 +318,7 @@ gramatica_dcg = {
         ['Vintr'],
         ['Vintr', 'SP'],
         ['Vintr', 'Adv_frec'],
+        ['Vintr', 'AP'],
     ],
 
     'AP': [
@@ -374,6 +376,8 @@ lexico = {
     'una':  {'cat': 'det', 'gen': 'fem',    'num': 'sing'},
     'mi':   {'cat': 'det', 'gen': 'neutro', 'num': 'sing'},
     'mis':  {'cat': 'det', 'gen': 'neutro', 'num': 'plur'},
+    'mucho': {'cat': 'det', 'gen': 'masc',  'num': 'sing', 'grado': 'muy_alto'},
+    'mucha': {'cat': 'det', 'gen': 'fem',   'num': 'sing', 'grado': 'muy_alto'},
 
     # ── Pronombres sujeto ─────────────────────────────────────────────
     'yo':   {'cat': 'pro', 'gen': 'neutro', 'num': 'sing', 'pers': '1'},
@@ -412,10 +416,24 @@ lexico = {
     'algunos': {'cat': 'num', 'val': None},
 
     # ── Unidades de tiempo ────────────────────────────────────────────
+    'día':     {'cat': 'tunidad', 'escala': 'corto'},
     'días':    {'cat': 'tunidad', 'escala': 'corto'},
+    'semana':  {'cat': 'tunidad', 'escala': 'medio'},
     'semanas': {'cat': 'tunidad', 'escala': 'medio'},
+    'mes':     {'cat': 'tunidad', 'escala': 'largo'},
     'meses':   {'cat': 'tunidad', 'escala': 'largo'},
+    'año':     {'cat': 'tunidad', 'escala': 'muy_largo'},
     'años':    {'cat': 'tunidad', 'escala': 'muy_largo'},
+
+    # ── Sujetos Terceros (Familia / Relaciones) ───────────────────────
+    'hermano': {'cat': 'n', 'gen': 'masc', 'num': 'sing', 'dim': 'neutro', 'pol': 'neutro', 'sev': 'neutro', 'pers': '3'},
+    'hermana': {'cat': 'n', 'gen': 'fem',  'num': 'sing', 'dim': 'neutro', 'pol': 'neutro', 'sev': 'neutro', 'pers': '3'},
+    'madre':   {'cat': 'n', 'gen': 'fem',  'num': 'sing', 'dim': 'neutro', 'pol': 'neutro', 'sev': 'neutro', 'pers': '3'},
+    'padre':   {'cat': 'n', 'gen': 'masc', 'num': 'sing', 'dim': 'neutro', 'pol': 'neutro', 'sev': 'neutro', 'pers': '3'},
+    'hijo':    {'cat': 'n', 'gen': 'masc', 'num': 'sing', 'dim': 'neutro', 'pol': 'neutro', 'sev': 'neutro', 'pers': '3'},
+    'hija':    {'cat': 'n', 'gen': 'fem',  'num': 'sing', 'dim': 'neutro', 'pol': 'neutro', 'sev': 'neutro', 'pers': '3'},
+    'amigo':   {'cat': 'n', 'gen': 'masc', 'num': 'sing', 'dim': 'neutro', 'pol': 'neutro', 'sev': 'neutro', 'pers': '3'},
+    'amiga':   {'cat': 'n', 'gen': 'fem',  'num': 'sing', 'dim': 'neutro', 'pol': 'neutro', 'sev': 'neutro', 'pers': '3'},
 
     # ── Sustantivos — dim: animo (estados afectivos) ──────────────────
     'tristeza':      {'cat': 'n', 'gen': 'fem',    'num': 'sing', 'dim': 'animo',    'pol': 'neg', 'sev': 'medio'},
@@ -534,11 +552,13 @@ lexico = {
     'estoy': {'cat': 'vcop', 'num': 'sing', 'pers': '1'},
     'soy':   {'cat': 'vcop', 'num': 'sing', 'pers': '1'},
     'ando':  {'cat': 'vcop', 'num': 'sing', 'pers': '1'},
+    'está':  {'cat': 'vcop', 'num': 'sing', 'pers': '3'},
 
     # ── Verbos de percepción / emoción (requieren clítico 'me') ───────
     'siento':    {'cat': 'vsent', 'num': 'sing', 'pers': '1'},
     'encuentro': {'cat': 'vsent', 'num': 'sing', 'pers': '1'},
     'noto':      {'cat': 'vsent', 'num': 'sing', 'pers': '1'},
+    'siente':    {'cat': 'vsent', 'num': 'sing', 'pers': '3'},
 
     # ── Verbos de dificultad (requieren clítico 'me') ─────────────────
     'cuesta':  {'cat': 'vcuesta', 'num': 'sing', 'pers': '3'},
@@ -549,6 +569,7 @@ lexico = {
     'necesito':    {'cat': 'vtrans', 'num': 'sing', 'pers': '1'},
     'experimento': {'cat': 'vtrans', 'num': 'sing', 'pers': '1'},
     'busco':       {'cat': 'vtrans', 'num': 'sing', 'pers': '1'},
+    'tiene':       {'cat': 'vtrans', 'num': 'sing', 'pers': '3'},
 
     # ── Verbos modales ────────────────────────────────────────────────
     'puedo':   {'cat': 'vmod', 'num': 'sing', 'pers': '1', 'tipo': 'capacidad'},
@@ -567,6 +588,9 @@ lexico = {
     'trabajo':  {'cat': 'vintr', 'num': 'sing', 'pers': '1', 'dim': 'neutro',   'sev': 'neutro'},
     'funciono': {'cat': 'vintr', 'num': 'sing', 'pers': '1', 'dim': 'fisico',   'sev': 'neutro'},
     'descanso': {'cat': 'vintr', 'num': 'sing', 'pers': '1', 'dim': 'fisico',   'sev': 'neutro'},
+    'duerme':   {'cat': 'vintr', 'num': 'sing', 'pers': '3', 'dim': 'fisico',   'sev': 'neutro'},
+    'llora':    {'cat': 'vintr', 'num': 'sing', 'pers': '3', 'dim': 'animo',    'sev': 'medio'},
+    'come':     {'cat': 'vintr', 'num': 'sing', 'pers': '3', 'dim': 'fisico',   'sev': 'neutro'},
 
     # ── Verbos en infinitivo ──────────────────────────────────────────
     'dormir':        {'cat': 'vinf', 'dim': 'fisico',    'sev': 'neutro'},

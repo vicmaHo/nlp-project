@@ -27,7 +27,7 @@ class ParserDCG:
             'V_inf': 'vinf', 'Vcris': 'vcris'
         }
 
-    def consultar_lexico(self, token):
+    def consultar_lexico(self, token, simbolo=None):
         if token == "a veces":
             return {'cat': 'adv_frec', 'frec': 'bajo', 'texto': 'a veces'}
         if token == "todo el tiempo":
@@ -35,14 +35,72 @@ class ParserDCG:
         if token == "un poco":
             return {'cat': 'adv_int', 'grado': 'bajo', 'texto': 'un poco'}
         if token == "mucho":
-            return {'cat': 'det', 'gen': 'neutro', 'num': 'sing'}
-        return lexico.get(token, None)
+            return {'cat': 'det', 'gen': 'neutro', 'num': 'sing', 'grado': 'alto'}
+        
+        # Manejo de ambigüedad léxica resolviendo dinámicamente según el símbolo del parser
+        cat_buscada = self.map_categorias.get(simbolo) if simbolo else None
+        
+        lexico_ambiguo_rasgos = {
+            "siento": {
+                "vsent": {'cat': 'vsent', 'num': 'sing', 'pers': '1'},
+                "vtrans": {'cat': 'vtrans', 'num': 'sing', 'pers': '1'}
+            },
+            "bajo": {
+                "adj": {'cat': 'adj', 'gen': 'masc', 'num': 'sing', 'dim': 'animo', 'pol': 'neg', 'sev': 'medio'},
+                "prep": {'cat': 'prep', 'tipo': 'posicion'},
+                "vintr": {'cat': 'vintr', 'num': 'sing', 'pers': '1'}
+            },
+            "sobre": {
+                "prep": {'cat': 'prep', 'tipo': 'locativo'},
+                "n": {'cat': 'n', 'gen': 'masc', 'num': 'sing', 'dim': 'neutro'}
+            },
+            "un": {
+                "det": {'cat': 'det', 'gen': 'masc', 'num': 'sing'},
+                "num": {'cat': 'num', 'val': 1}
+            },
+            "una": {
+                "det": {'cat': 'det', 'gen': 'fem', 'num': 'sing'},
+                "num": {'cat': 'num', 'val': 1}
+            }
+        }
+        
+        if token in lexico_ambiguo_rasgos:
+            if cat_buscada and cat_buscada in lexico_ambiguo_rasgos[token]:
+                return lexico_ambiguo_rasgos[token][cat_buscada]
+            first_cat = list(lexico_ambiguo_rasgos[token].keys())[0]
+            return lexico_ambiguo_rasgos[token][first_cat]
+
+        # Búsqueda normal
+        res = lexico.get(token, None)
+        if res is not None:
+            return res
+            
+        # Normalizar acentos y probar
+        def normalizar(s):
+            replacements = {
+                'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u', 'ü': 'u'
+            }
+            return "".join(replacements.get(c, c) for c in s)
+            
+        token_norm = normalizar(token)
+        for k, v in lexico.items():
+            if normalizar(k) == token_norm:
+                return v
+                
+        # Probar mapeando ñ a n y viceversa
+        token_norm_n = token_norm.replace('ñ', 'n')
+        for k, v in lexico.items():
+            k_norm = normalizar(k).replace('ñ', 'n')
+            if k_norm == token_norm_n:
+                return v
+                
+        return None
 
     def parse_simbolo(self, simbolo, tokens, pos):
         if simbolo in self.map_categorias:
             if pos < len(tokens):
                 token = tokens[pos]
-                rasgos_palabra = self.consultar_lexico(token)
+                rasgos_palabra = self.consultar_lexico(token, simbolo)
                 if rasgos_palabra and rasgos_palabra.get('cat') == self.map_categorias[simbolo]:
                     nodo = Nodo(simbolo, hijos=[token], rasgos=rasgos_palabra.copy())
                     return nodo, pos + 1
@@ -118,6 +176,17 @@ class ParserDCG:
                 sp_rasgos = hijos[2].rasgos if len(hijos) == 3 else {}
                 rasgos_sintetizados = combinar_rasgos_clinicos([n.rasgos, sp_rasgos])
                 rasgos_sintetizados.update(unif)
+                
+                # Modulación de severidad por determinante si tiene grado (ej: mucho/mucha)
+                if det.rasgos.get('grado') is not None:
+                    grado = det.rasgos.get('grado')
+                    sev_original = n.rasgos.get('sev', 'medio')
+                    nueva_sev = MODULACION_SEVERIDAD.get((grado, sev_original), sev_original)
+                    rasgos_sintetizados['sev'] = nueva_sev
+                    
+                # Propagar persona
+                if 'pers' in n.rasgos:
+                    rasgos_sintetizados['pers'] = n.rasgos['pers']
             else:
                 rasgos_sintetizados = combinar_rasgos_clinicos([h.rasgos for h in hijos])
                 if len(hijos) == 1:
@@ -190,7 +259,7 @@ class ParserDCG:
             res['pol'] = 'neg'
             res['sev'] = 'medio'
             res['dim'] = 'animo'
-        elif any(w in texto_vp for w in ["dormir", "duermo", "duerma", "sueño", "dormir"]):
+        elif any(w in texto_vp for w in ["dormir", "duermo", "duerma", "duerme", "sueño"]):
             res['dim'] = 'fisico'
             res['sev'] = 'medio'
             res['pol'] = 'neg'

@@ -1,0 +1,49 @@
+# ============================================================
+# corpus_clinico_ambiguo.txt — Triaje Psicológico (PLN)
+# Universidad del Valle
+# Formato: palabra   categoria
+# ============================================================
+
+# ---- SIENTO ----
+# "me siento triste" -> Vsent (Verbo de sentimiento/percepción)
+siento Vsent
+siento Vsent
+siento Vsent
+siento Vsent
+siento Vsent
+siento Vsent
+# "siento dolor en el pecho" -> Vtrans (Verbo transitivo)
+siento Vtrans
+siento Vtrans
+
+# ---- BAJO ----
+# "mi ánimo es bajo" -> Adj (Adjetivo de severidad/estado)
+bajo Adj
+bajo Adj
+bajo Adj
+bajo Adj
+bajo Adj
+# "bajo mucha presión" -> Prep (Preposición)
+bajo Prep
+bajo Prep
+# "yo bajo de peso" -> Vintr (Verbo intransitivo de bajar)
+bajo Vintr
+
+# ---- SOBRE ----
+# "hablar sobre mi ansiedad" -> Prep (Preposición)
+sobre Prep
+sobre Prep
+sobre Prep
+sobre Prep
+sobre Prep
+# "el sobre de ansiolíticos" -> N (Sustantivo)
+sobre N
+
+# ---- COMO ----
+# "triste como siempre" -> Conj (Conjunción comparativa)
+como Conj
+como Conj
+como Conj
+# "como muy poco" -> Vintr (Verbo de comer)
+como Vintr
+como Vintr

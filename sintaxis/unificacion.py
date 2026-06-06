@@ -1,12 +1,3 @@
-# -*- coding: utf-8 -*-
-# =======================================================================
-# UNIFICACIÓN DE RASGOS SINTÁCTICOS Y CLÍNICOS
-# Universidad del Valle — Procesamiento de Lenguaje Natural
-# =======================================================================
-
-# =======================================================================
-# ALGORITMO DE UNIFICACIÓN GENERAL DE DAGs (Clase 7)
-# =======================================================================
 
 def unificar(dag1, dag2):
     """
@@ -88,6 +79,7 @@ def combinar_rasgos_clinicos(dict_list):
     final_sev = 'neutro'
     final_pol = 'neutro'
     final_escala = None
+    final_pers = None
 
     has_neg = False
     has_pos = False
@@ -116,6 +108,10 @@ def combinar_rasgos_clinicos(dict_list):
         if escala and escala_precedence.get(escala, 0) > escala_precedence.get(final_escala, 0):
             final_escala = escala
 
+        pers = d.get('pers')
+        if pers:
+            final_pers = pers
+
     if num_sintomas_negativos >= 2 and final_sev == 'medio':
         final_sev = 'alto'
     elif num_sintomas_negativos >= 3:
@@ -128,9 +124,12 @@ def combinar_rasgos_clinicos(dict_list):
     else:
         final_pol = 'neutro'
 
-    return {
+    res = {
         'dim': final_dim,
         'sev': final_sev,
         'pol': final_pol,
         'escala': final_escala
     }
+    if final_pers:
+        res['pers'] = final_pers
+    return res
